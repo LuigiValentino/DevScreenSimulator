@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevScreen Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f4f9;
+        }
+
+        h1 {
+            color: #4A4A4A;
+        }
+
+        .device-frame {
+            position: relative;
+            background-color: white;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            overflow: hidden;
+            margin: 20px auto;
+            transition: all 0.3s ease;
+        }
+
+        .device-inner {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .iframe-content {
+            border: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        .device-button {
+            background-color: #6366F1;
+            color: white;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .device-button:hover {
+            background-color: #4F46E5;
+            transform: scale(1.05);
+        }
+
+        .device-button.active {
+            background-color: #4338ca;
+        }
+
+        #deviceFrame {
+            max-width: 100%;
+            max-height: 100vh;
+            overflow: auto;
+        }
+
+        .section-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        #orientationButton {
+            background-color: #10B981;
+            color: white;
+            padding: 10px 20px;
+            font-weight: bold;
+            border-radius: 8px;
+            margin-right: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        #zoomButton {
+            background-color: #10B981;
+            color: white;
+            padding: 10px 20px;
+            font-weight: bold;
+            border-radius: 8px;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        #orientationButton:hover {
+            background-color: #059669;
+            transform: scale(1.05);
+        }
+
+        #zoomButton:hover {
+            background-color: #059669;
+            transform: scale(1.05);
+        }
+
+        .flex-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .code-container {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #4A4A4A;
+        }
+
+        textarea {
+            background-color: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            transition: border-color 0.3s;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        textarea:focus {
+            border-color: #6366F1;
+            outline: none;
+        }
+
+        footer {
+            margin-top: 40px;
+            padding: 20px;
+            text-align: center;
+            background-color: #f4f4f9;
+            color: #6B7280;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-100 py-10">
+
+    <div class="container mx-auto px-8">
+        <h1 class="text-4xl font-bold text-left mb-10">DevScreen Simulator</h1>
+        <div class="section-container code-container">
+            <form id="codeForm" class="space-y-6">
+                <div>
+                    <div class="mb-6 text-left">
+                        <label class="block text-lg font-bold mb-4">Select Library:</label>
+                        <div class="flex  space-x-4">
+                            <label class="radio-label">
+                                <input type="radio" name="library" value="none" checked> None
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="library" value="bootstrap"> Bootstrap
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="library" value="tailwind"> Tailwind
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="library" value="materialize"> Materialize
+                            </label>
+                        </div>
+                        <br>
+                    <label>HTML Code:</label>
+                    <textarea id="htmlCode" name="html_code" rows="5" placeholder="Write your HTML code here..." 
+                        class="w-full p-3 border rounded-md"></textarea>
+                </div>
+                <div>
+                    <label>CSS Code:</label>
+                    <textarea id="cssCode" name="css_code" rows="5" placeholder="Write your CSS code here..." 
+                        class="w-full p-3 border rounded-md"></textarea>
+                </div>
+                <div>
+                    <label>JavaScript Code:</label>
+                    <textarea id="jsCode" name="js_code" rows="5" placeholder="Write your JavaScript code here..." 
+                        class="w-full p-3 border rounded-md"></textarea>
+                </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="flex-container">
+            <div id="deviceButtons">
+                <button class="device-button active" data-width="375" data-height="812">iPhone X (375x812)</button>
+                <button class="device-button" data-width="390" data-height="844">iPhone 12 (390x844)</button>
+                <button class="device-button" data-width="360" data-height="800">Samsung Galaxy S20 (360x800)</button>
+                <button class="device-button" data-width="1440" data-height="900">MacBook Air (1440x900)</button>
+                <button class="device-button" data-width="1920" data-height="1080">Desktop Large (1920x1080)</button>
+                <button class="device-button" data-width="3840" data-height="2160">4K Desktop (3840x2160)</button>
+                <button class="device-button" data-width="393" data-height="851">Google Pixel 5 (393x851)</button>
+                <button class="device-button" data-width="412" data-height="869">OnePlus 8 (412x869)</button>
+                <button class="device-button" data-width="768" data-height="1024">iPad (768x1024)</button>
+                <button class="device-button" data-width="2736" data-height="1824">Surface Pro 7 (2736x1824)</button>
+                <button class="device-button" data-width="540" data-height="720">Surface Duo (540x720)</button>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <hr class="mb-2">
+            <button id="orientationButton">Switch to Landscape</button>
+            <button id="zoomButton">Adjust to Screen</button>
+        </div>
+
+        <div class="device-frame" id="deviceFrame" style="width: 375px; height: 812px;">
+            <div class="device-inner">
+                <iframe id="deviceIframe" class="iframe-content"></iframe>
+            </div>
+        </div>
+    </div>
+
+<hr>    
+    <footer>
+        © 2024 DevScreen Simulator - <a href="luigiadducci.netlify.app" class="underline">Luigi Adducci</a>
+    </footer>
+    <script src="static/js/main.js"></script>
+</body>
+</html>
